@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lua Learner – Mobile Friendly</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #1f1f1f;
+        color: white;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* Layout for desktop */
+    #sidebar {
+        width: 260px;
+        background: #111;
+        padding: 20px;
+        box-sizing: border-box;
+        border-right: 2px solid #333;
+    }
+
+    /* Hide sidebar on mobile */
+    #sidebar {
+        display: none;
+    }
+
+    /* Mobile dropdown button */
+    #mobileMenuBtn {
+        display: none;
+        padding: 15px;
+        background: #00c3ff;
+        color: black;
+        text-align: center;
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    /* Show collapsible menu on mobile */
+    #mobileLessons {
+        display: none;
+        background: #111;
+        padding: 10px;
+    }
+
+    .lesson {
+        padding: 10px;
+        margin: 6px 0;
+        background: #222;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #content {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+    }
+
+    #title {
+        font-size: 24px;
+        color: #00c3ff;
+        margin-top: 10px;
+    }
+
+    #editor {
+        width: 100%;
+        min-height: 200px;
+        background: #000;
+        color: #00ff88;
+        border-radius: 5px;
+        border: 2px solid #333;
+        padding: 10px;
+        font-size: 16px;
+        font-family: monospace;
+        box-sizing: border-box;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        background: #00c3ff;
+        border: none;
+        color: black;
+        font-size: 18px;
+        margin-top: 12px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #output {
+        margin-top: 15px;
+        background: #222;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    /* XP Level Box */
+    #xpBox {
+        background: #111;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    #xpBar {
+        width: 100%;
+        background: #333;
+        height: 15px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+
+    #xpFill {
+        height: 15px;
+        width: 0%;
+        background: #00ff88;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 850px) {
+        #mobileMenuBtn {
+            display: block;
+        }
+    }
+
+</style>
+</head>
+
+<body>
+
+<div id="mobileMenuBtn" onclick="toggleLessons()">📚 LESSONS</div>
+
+<div id="mobileLessons"></div>
+
+<div id="content">
+    <div id="xpBox">
+        <div id="xpText">Level 1 • 0 XP</div>
+        <div id="xpBar"><div id="xpFill"></div></div>
+    </div>
+
+    <div id="title">Welcome!</div>
+    <div id="text">Tap LESSONS above to start learning Roblox Lua.</div>
+
+    <textarea id="editor">-- Code appears here</textarea>
+    <button onclick="runCode()">Run Code</button>
+
+    <div id="output">Output will appear here...</div>
+</div>
+
+<script>
+const lessons = [
+    {title:"Printing",text:"Use print() to show text.",code:'print("Hello!")'},
+    {title:"Variables",text:"Store values using variables.",code:'local x=10\nprint(x)'},
+    {title:"Functions",text:"Functions let you reuse code.",code:'function hi()\n print("hi")\nend\nhi()'},
+    {title:"Roblox Basics",text:"Objects exist in the Workspace.",code:'print("Part changed!")'},
+    {title:"Challenge",text:"Print 1 to 5.",code:'for i=1,5 do print(i) end'}
+];
+
+// Populate mobile dropdown
+document.getElementById("mobileLessons").innerHTML =
+    lessons
+        .map((l,i)=>`<div class="lesson" onclick="loadLesson(${i})">${l.title}</div>`)
+        .join("");
+
+function toggleLessons() {
+    const box = document.getElementById("mobileLessons");
+    box.style.display = (box.style.display === "block") ? "none" : "block";
+}
+
+let xp = 0, level = 1;
+
+function addXP(amount) {
+    xp += amount;
+    if (xp >= 100) {
+        xp -= 100;
+        level++;
+    }
+    updateXP();
+}
+
+function updateXP() {
+    document.getElementById("xpText").innerText = `Level ${level} • ${xp} XP`;
+    document.getElementById("xpFill").style.width = xp + "%";
+}
+
+function loadLesson(i) {
+    const l = lessons[i];
+    document.getElementById("title").innerText = l.title;
+    document.getElementById("text").innerText = l.text;
+    document.getElementById("editor").value = l.code;
+    addXP(20);
+}
+
+function runCode() {
+    let code = document.getElementById("editor").value;
+    let output = document.getElementById("output");
+
+    try {
+        eval(code.replace(/print/g, "console.log"));
+        output.innerText = "✔ Code ran! Check console.";
+        addXP(10);
+    } catch(e) {
+        output.innerText = "❌ " + e;
+    }
+}
+</script>
+
+</body>
+</html>
